@@ -1,13 +1,12 @@
 from rest_framework import serializers
 from users.models import Student
 from courses.models import ClassSession
-from .models import Attendance, Device
+from .models import Attendance
 
 class RFIDCheckInSerializer(serializers.Serializer):
     rfid_tag = serializers.CharField(required=False, allow_blank=True)
     index_number = serializers.CharField(required=False, allow_blank=True)
     session_id = serializers.IntegerField(required=True)
-    device_id = serializers.IntegerField(required=False)
 
     def validate(self, data):
         rfid_tag = data.get("rfid_tag")
@@ -17,7 +16,7 @@ class RFIDCheckInSerializer(serializers.Serializer):
         if not rfid_tag and not index_number:
             raise serializers.ValidationError("Provide either rfid_tag or index_number.")
 
-        # Student
+        # Student lookup
         try:
             if rfid_tag:
                 student = Student.objects.get(rfid_tag=rfid_tag, is_active=True)
@@ -26,24 +25,14 @@ class RFIDCheckInSerializer(serializers.Serializer):
         except Student.DoesNotExist:
             raise serializers.ValidationError("Student not found or inactive.")
 
-        # Session
+        # Session lookup
         try:
             session = ClassSession.objects.get(pk=session_id)
         except ClassSession.DoesNotExist:
             raise serializers.ValidationError("ClassSession not found.")
 
-        # Optional device
-        device = None
-        device_id = data.get("device_id")
-        if device_id:
-            try:
-                device = Device.objects.get(pk=device_id)
-            except Device.DoesNotExist:
-                raise serializers.ValidationError("Device not found.")
-
         data["student"] = student
         data["session"] = session
-        data["device"] = device
         return data
 
 

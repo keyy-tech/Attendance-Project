@@ -3,22 +3,6 @@ from users.models import Student
 from courses.models import ClassSession, Course
 
 # Create your models here.
-
-class Device(models.Model):
-    DEVICE_TYPE_CHOICES = [
-        ("RFID", "RFID Reader"),
-        ("FPRINT", "Fingerprint Scanner"),
-        ("QR", "QR Station"),
-        ("OTHER", "Other"),
-    ]
-    device_type = models.CharField(max_length=10, choices=DEVICE_TYPE_CHOICES)
-    label = models.CharField(max_length=120)
-    location = models.CharField(max_length=120, blank=True)
-    serial_number = models.CharField(max_length=120, blank=True, null=True, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    def __str__(self):
-        return f"{self.device_type} - {self.label}"
-
 class Attendance(models.Model):
     STATUS_CHOICES = [
         ("PRESENT", "Present"),
@@ -27,7 +11,6 @@ class Attendance(models.Model):
     ]
     METHOD_CHOICES = [
         ("RFID", "RFID"),
-        ("FPRINT", "Fingerprint"),
         ("QR", "QR"),
         ("MANUAL", "Manual"),
     ]
@@ -35,7 +18,6 @@ class Attendance(models.Model):
     session = models.ForeignKey(ClassSession, on_delete=models.CASCADE, related_name="attendance_records")
     check_in_time = models.DateTimeField(blank=True, null=True)
     verification_method = models.CharField(max_length=10, choices=METHOD_CHOICES)
-    device = models.ForeignKey("Device", on_delete=models.SET_NULL, null=True, blank=True, related_name="attendance_records")
     status = models.CharField(max_length=8, choices=STATUS_CHOICES, default="PRESENT")
     manual_note = models.CharField(max_length=255, blank=True)
     marks_awarded = models.DecimalField(max_digits=5, decimal_places=2, default=0)
