@@ -28,9 +28,7 @@ class Student(models.Model):
     def __str__(self):
         return f"{self.index_number} - {self.first_name} {self.last_name}"
     
-    @property
-    def full_name(self):
-        return f"{self.first_name} {self.last_name}"
+
 
 
 class Lecturer(models.Model):
@@ -57,7 +55,4 @@ class Lecturer(models.Model):
         title_prefix = f"{self.title} " if self.title else ""
         return f"{self.staff_id} - {title_prefix}{self.first_name} {self.last_name}"
     
-    @property
-    def full_name(self):
-        title_prefix = f"{self.title} " if self.title else ""
-        return f"{title_prefix}{self.first_name} {self.last_name}"
+

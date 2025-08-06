@@ -49,28 +49,19 @@ class Attendance(models.Model):
             models.Index(fields=["verification_method"]),
         ]
         ordering = ["session", "student"]
+
     def __str__(self):
         return f"{self.student.index_number} - {self.session} [{self.status}]"
 
 class PermissionRequest(models.Model):
-    STATUS_CHOICES = [
-        ("PENDING", "Pending"),
-        ("APPROVED", "Approved"),
-        ("REJECTED", "Rejected"),
-    ]
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="permission_requests")
     session = models.ForeignKey(ClassSession, on_delete=models.CASCADE, related_name="permission_requests")
-    reason = models.TextField(blank=True)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="PENDING")
-    requested_at = models.DateTimeField(auto_now_add=True)
-    decided_at = models.DateTimeField(blank=True, null=True)
-    decided_by = models.CharField(max_length=120, blank=True)
+    reason = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
     class Meta:
         unique_together = ("student", "session")
         indexes = [
-            models.Index(fields=["status"]),
-            models.Index(fields=["session"]),
-            models.Index(fields=["student"]),
+            models.Index(fields=["session", "student"]),
         ]
-    def __str__(self):
-        return f"Permission {self.student.index_number} @ {self.session} [{self.status}]"
+        ordering = ["session", "student"]
